@@ -34,14 +34,14 @@
     </div>
     <div>
       <h3>Recent Activities</h3>
-      <md-card *ngFor="let item of recent" [style.background]="item.color">{{item.name}}</md-card>
+      <md-card *ngFor="let item of recent | async" [style.background]="item.color">{{item.name}}</md-card>
     </div>
     <div>
       <h3>Completed</h3>
       <md-card *ngFor="let item of completed" [style.background]="item.color">{{item.name}}</md-card>
     </div>
 
-    <button md-mini-fab class="example-fab" (click)="console.log('ff')">
+    <button md-mini-fab class="example-fab" routerLink="activity">
       <md-icon>add</md-icon>
     </button>
   </div>

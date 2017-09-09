@@ -1,0 +1,21 @@
+<md-sidenav-container>
+  <md-sidenav #sidenav>
+    <md-nav-list>
+      <md-list-item>
+        <div> {{ (user | async)?.displayName }} </div>
+        <button (click)="logout()">Logout</button>
+      </md-list-item>
+      <a md-list-item routerLink="/project">Project</a>
+      <a md-list-item href="#">item 1</a>
+      <a md-list-item href="#">item 2</a>
+      <a md-list-item href="#">item 3</a>
+    </md-nav-list>
+  </md-sidenav>
+
+  <md-toolbar color="primary">
+    <md-icon class="example-icon" (click)="sidenav.toggle()">menu</md-icon>
+    <span>Today: 7 of 11 items completed</span>
+  </md-toolbar>
+
+  <router-outlet></router-outlet>
+</md-sidenav-container>

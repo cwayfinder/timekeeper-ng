@@ -1,16 +1,30 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { ThingComponent } from './thing/thing.component';
 import { ContextComponent } from './context/context.component';
+import { ActivityComponent } from './activity/activity.component';
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './auth.guard';
+import { LayoutComponent } from './layout/layout.component';
+import { ProjectComponent } from './project/project.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomeComponent },
-  { path: 'thing', component: ThingComponent },
-  { path: 'context', component: ContextComponent },
+  {
+    path: '', component: LayoutComponent, canActivate: [AuthGuard],
+    children: [
+      { path: '', component: HomeComponent },
+      { path: 'thing', component: ThingComponent },
+      { path: 'context', component: ContextComponent },
+      { path: 'activity', component: ActivityComponent },
+      { path: 'project', component: ProjectComponent },
+    ]
+  },
 
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+
+  { path: '**', redirectTo: '/', pathMatch: 'full' },
 ];
 
 @NgModule({

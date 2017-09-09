@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 
 @Component({
   selector: 'tk-home',
@@ -17,15 +18,15 @@ export class HomeComponent implements OnInit {
     { name: 'item 6', color: '#607D8B' },
   ];
 
-  recent = [
-    { name: 'listening podcasts', color: '#FF5722' },
-    { name: 'meeting', color: '#607D8B' },
-    { name: 'bugfix', color: '#607D8B' },
-    { name: 'interviewing', color: '#607D8B' },
-    { name: 'item 1', color: '#607D8B' },
-    { name: 'item 2', color: '#607D8B' },
-    { name: 'item 9', color: '#607D8B' },
-  ];
+  // recent: any = [
+  //   { name: 'listening podcasts', color: '#FF5722' },
+  //   { name: 'meeting', color: '#607D8B' },
+  //   { name: 'bugfix', color: '#607D8B' },
+  //   { name: 'interviewing', color: '#607D8B' },
+  //   { name: 'item 1', color: '#607D8B' },
+  //   { name: 'item 2', color: '#607D8B' },
+  //   { name: 'item 9', color: '#607D8B' },
+  // ];
 
   completed = [
     { name: 'morning routine', color: '#4CAF50' },
@@ -56,9 +57,11 @@ export class HomeComponent implements OnInit {
     { name: 'taxi', color: '#D7CCC8' },
   ];
 
-  constructor() { }
+  recent: FirebaseListObservable<any[]>;
+
+  constructor(private db: AngularFireDatabase) { }
 
   ngOnInit() {
+    this.recent = this.db.list('/v1/activities');
   }
-
 }
