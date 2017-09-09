@@ -1,0 +1,96 @@
+:host {
+
+  height: calc(100% - 56px);
+}
+
+.day-stack {
+  position: relative;
+
+  .entries {
+    display: flex;
+    height: 8px;
+  }
+
+  .cursor {
+    position: absolute;
+    top: 0;
+    left: 42%;
+    height: 100%;
+    width: 1px;
+    background: red;
+    &::after {
+      $size: 3px;
+
+      content: '';
+      display: block;
+      box-sizing: border-box;
+      position: absolute;
+      height: $size * 2;
+      width: $size * 2 + 1px;
+      top: calc(100% - #{$size});
+      left: -$size;
+      //background: black;
+      border-left: solid transparent $size;
+      border-right: solid transparent $size;
+      border-bottom: solid red $size;
+      //border-top: solid red $size;
+    }
+  }
+}
+
+.items {
+  display: flex;
+  height: 100%;
+}
+
+.things, .contexts {
+  height: 100%;
+}
+
+.things {
+  flex: 1;
+
+  h3, h4 {
+    //margin: 4px;
+    padding-left: 16px;
+  }
+
+  md-card {
+    margin: 4px;
+    color: #FFFFFF;
+  }
+
+  md-list-item {
+    margin: 4px;
+    color: #FFFFFF;
+    border-radius: 2px;
+  }
+}
+
+.contexts {
+  width: 90px;
+
+  h3 {
+    margin: 4px;
+  }
+
+  md-card {
+    margin: 4px;
+    text-align: center;
+
+    height: 64px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+
+
+[md-mini-fab] {
+  position: fixed;
+  right: 20px;
+  bottom: 10px;
+}

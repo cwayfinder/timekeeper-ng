@@ -1,0 +1,58 @@
+<div class="day-stack">
+  <div class="entries">
+    <div *ngFor="let item of day; let i = index"
+         class="entry"
+         [style.background]="i === 3 ? '#8BC34A' : item.color"
+         [style.color]="i === 3 ? '#FFF' : 'inherit'"
+         [style.flex]="item.proportion">&nbsp;
+    </div>
+  </div>
+  <div class="cursor"></div>
+</div>
+
+<div class="items">
+  <div class="things">
+    <!--<div>-->
+      <!--<h3>Contexts</h3>-->
+      <!--<md-button-toggle-group vertical #group="mdButtonToggleGroup">-->
+        <!--<md-button-toggle *ngFor="let item of contexts" [style.background]="item.color" [value]="item.name">{{item.name}}</md-button-toggle>-->
+        <!--&lt;!&ndash;<md-button-toggle *ngFor="let item of contexts" [value]="item.name">{{item.name}}</md-button-toggle>&ndash;&gt;-->
+      <!--</md-button-toggle-group>-->
+    <!--</div>-->
+
+    <h4>Things To Do Today</h4>
+    <md-list>
+      <md-list-item *ngFor="let item of tasks" [style.background]="item.color">
+        <md-checkbox></md-checkbox>
+        {{item.name}}
+      </md-list-item>
+    </md-list>
+
+    <div>
+      <h3>Things To Do</h3>
+      <md-card *ngFor="let item of tasks" [style.background]="item.color">{{item.name}}</md-card>
+    </div>
+    <div>
+      <h3>Recent Activities</h3>
+      <md-card *ngFor="let item of recent" [style.background]="item.color">{{item.name}}</md-card>
+    </div>
+    <div>
+      <h3>Completed</h3>
+      <md-card *ngFor="let item of completed" [style.background]="item.color">{{item.name}}</md-card>
+    </div>
+
+    <button md-mini-fab class="example-fab" (click)="console.log('ff')">
+      <md-icon>add</md-icon>
+    </button>
+  </div>
+
+  <!--<div class="contexts">-->
+    <!--<h3>Contexts</h3>-->
+    <!--<md-card *ngFor="let item of contexts" tabindex="1">{{item.name}}</md-card>-->
+
+    <!--&lt;!&ndash;<md-button-toggle-group #group="mdButtonToggleGroup">&ndash;&gt;-->
+      <!--&lt;!&ndash;&lt;!&ndash;<md-button-toggle *ngFor="let item of contexts" [style.background]="item.color" [value]="item.name">{{item.name}}</md-button-toggle>&ndash;&gt;&ndash;&gt;-->
+      <!--&lt;!&ndash;<md-button-toggle *ngFor="let item of contexts" [value]="item.name">{{item.name}}</md-button-toggle>&ndash;&gt;-->
+    <!--&lt;!&ndash;</md-button-toggle-group>&ndash;&gt;-->
+  <!--</div>-->
+</div>
