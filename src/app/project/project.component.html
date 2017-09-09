@@ -1,3 +1,18 @@
-<p>
-  project works!
-</p>
+<form [formGroup]="form">
+  <md-form-field class="example-full-width">
+    <input mdInput placeholder="Project Name">
+  </md-form-field>
+
+  <md-select placeholder="Favorite food" #select="mdSelect">
+    <md-select-trigger>You have selected: {{ select.selected?.viewValue }}</md-select-trigger>
+    <md-option *ngFor="let color of colors"
+               [style.background]="color.value"
+               [value]="color.name">{{ color.name }}</md-option>
+  </md-select>
+
+  <md-button-toggle-group #group="mdButtonToggleGroup">
+    <md-button-toggle *ngFor="let color of colors"
+                      [style.background]="color.value"
+                      [value]="color.value">&nbsp;</md-button-toggle>
+  </md-button-toggle-group>
+</form>

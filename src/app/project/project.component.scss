@@ -1,0 +1,18 @@
+form {
+  width: 248px;
+  display: flex;
+  flex-direction: column;
+}
+
+md-option {
+  color: #fff;
+}
+
+md-button-toggle-group {
+  flex-wrap: wrap;
+}
+
+md-button-toggle {
+  width: 36px;
+  height: 36px;
+}

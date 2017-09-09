@@ -2,7 +2,9 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule, MdIconModule, MdListModule, MdSidenavModule,
+  MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule, MdIconModule, MdInputModule, MdListModule,
+  MdSelectModule,
+  MdSidenavModule,
   MdToolbarModule
 } from '@angular/material';
 
@@ -21,6 +23,7 @@ import { LoginComponent } from './login/login.component';
 import { LayoutComponent } from './layout/layout.component';
 import { AuthGuard } from './auth.guard';
 import { ProjectComponent } from './project/project.component';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,7 @@ import { ProjectComponent } from './project/project.component';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
 
     AppRoutingModule,
 
@@ -51,6 +55,8 @@ import { ProjectComponent } from './project/project.component';
     MdButtonModule,
     MdButtonToggleModule,
     MdCheckboxModule,
+    MdSelectModule,
+    MdInputModule,
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent]
