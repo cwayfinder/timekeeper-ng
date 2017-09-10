@@ -1,5 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
+import { MdDialog } from '@angular/material';
+import { ActivityComponent } from '../activity/activity.component';
+import { Observable } from 'rxjs/Observable';
+import { AngularFireAuth } from 'angularfire2/auth';
 
 @Component({
   selector: 'tk-home',
@@ -57,11 +61,35 @@ export class HomeComponent implements OnInit {
     { name: 'taxi', color: '#D7CCC8' },
   ];
 
-  recent: FirebaseListObservable<any[]>;
+  recent: Observable<any[]>;
 
-  constructor(private db: AngularFireDatabase) { }
+  constructor(private db: AngularFireDatabase, private dialog: MdDialog,
+              private afAuth: AngularFireAuth) { }
 
   ngOnInit() {
-    this.recent = this.db.list('/v1/activities');
+    this.recent = this.afAuth.authState
+      .map(user => user.uid)
+      .switchMap(uid => this.db.list(`/v1/${uid}/activities`));
+  }
+
+  addActivity() {
+    this.openActivityDialog();
+  }
+
+  openActivityDialog(): void {
+    const dialogRef = this.dialog.open(ActivityComponent, {
+      width: '250px',
+      data: { name: '', color: 'red' }
+    });
+
+    dialogRef.afterClosed().subscribe(activity => {
+      console.log('The dialog was closed', activity);
+
+      this.afAuth.authState
+        .map(user => user.uid)
+        .switchMap(uid => Observable.from(this.db.list(`/v1/${uid}/activities`).push(activity)))
+        .map(ref => ref.key)
+        .subscribe(key => console.log('added activity', key));
+    });
   }
 }

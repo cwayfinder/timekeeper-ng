@@ -1,10 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { MdDialog, MdSelectChange } from '@angular/material';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MD_DIALOG_DATA, MdDialog, MdDialogRef, MdSelectChange } from '@angular/material';
 import { ProjectComponent } from '../project/project.component';
 import { AngularFireAuth } from 'angularfire2/auth';
-import * as firebase from 'firebase/app';
 import 'rxjs/add/operator/switchMap';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
@@ -21,12 +20,17 @@ export class ActivityComponent implements OnInit {
 
   projects: Observable<any>;
 
-  constructor(private fb: FormBuilder, public dialog: MdDialog, private db: AngularFireDatabase, private afAuth: AngularFireAuth) { }
+  constructor(private fb: FormBuilder,
+              private dialog: MdDialog,
+              private db: AngularFireDatabase,
+              private afAuth: AngularFireAuth,
+              public dialogRef: MdDialogRef<ProjectComponent>,
+              @Inject(MD_DIALOG_DATA) private data: any) { }
 
   ngOnInit() {
     this.form = this.fb.group({
-      name: '',
-      project: '',
+      name: [this.data.name, Validators.required],
+      project: [this.data.project, Validators.required],
     });
 
     this.projects = this.afAuth.authState
@@ -37,11 +41,11 @@ export class ActivityComponent implements OnInit {
   onChange(event: MdSelectChange) {
     console.log(event);
     if (event.value === null) {
-      this.openDialog();
+      this.openProjectDialog();
     }
   }
 
-  openDialog(): void {
+  openProjectDialog(): void {
     const dialogRef = this.dialog.open(ProjectComponent, {
       width: '250px',
       data: { name: '', color: 'red' }

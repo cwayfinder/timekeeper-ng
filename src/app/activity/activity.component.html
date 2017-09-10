@@ -1,11 +1,20 @@
-<form [formGroup]="form">
+<h1 md-dialog-title>Add new activity</h1>
+
+<form md-dialog-content [formGroup]="form">
   <md-form-field class="example-full-width">
-    <input mdInput placeholder="Name">
+    <input mdInput placeholder="Name" formControlName="name">
   </md-form-field>
 
-  <md-select placeholder="Project" #select="mdSelect" (change)="onChange($event)">
+  <md-select placeholder="Project" #select="mdSelect"
+             formControlName="project"
+             (change)="onChange($event)">
     <md-select-trigger>{{ select.selected?.viewValue }}</md-select-trigger>
     <md-option *ngFor="let project of projects | async" [value]="project.$key">{{ project.name }}</md-option>
     <md-option [value]="null">Create new...</md-option>
   </md-select>
 </form>
+
+<div md-dialog-actions>
+  <button md-button (click)="dialogRef.close()" tabindex="-1">No Thanks</button>
+  <button md-button [md-dialog-close]="form.value" tabindex="2">Ok</button>
+</div>
