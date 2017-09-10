@@ -1,18 +1,26 @@
+//:host {
+//  display: flex;
+//  justify-content: center;
+//  align-items: center;
+//}
+
 form {
-  width: 248px;
   display: flex;
   flex-direction: column;
 }
 
-md-option {
-  color: #fff;
-}
 
 md-button-toggle-group {
+  width: 216px;
   flex-wrap: wrap;
 }
 
 md-button-toggle {
   width: 36px;
   height: 36px;
+}
+
+.mat-button-toggle-checked {
+  box-sizing: border-box;
+  border: 2px solid #fff;
 }

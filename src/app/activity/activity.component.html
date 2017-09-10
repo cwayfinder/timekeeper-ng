@@ -1,3 +1,11 @@
-<p>
-  activity works!
-</p>
+<form [formGroup]="form">
+  <md-form-field class="example-full-width">
+    <input mdInput placeholder="Name">
+  </md-form-field>
+
+  <md-select placeholder="Project" #select="mdSelect" (change)="onChange($event)">
+    <md-select-trigger>{{ select.selected?.viewValue }}</md-select-trigger>
+    <md-option *ngFor="let project of projects | async" [value]="project.$key">{{ project.name }}</md-option>
+    <md-option [value]="null">Create new...</md-option>
+  </md-select>
+</form>

@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { palette } from '../palette';
+import { MD_DIALOG_DATA, MdDialogRef } from '@angular/material';
 
 @Component({
   selector: 'tk-project',
@@ -16,12 +17,14 @@ export class ProjectComponent implements OnInit {
     .filter(([name]) => name !== 'grey')
     .map(([name, variants]) => ({name: this.formatColorName(name), value: variants[500]}));
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder,
+              public dialogRef: MdDialogRef<ProjectComponent>,
+              @Inject(MD_DIALOG_DATA) private data: any) { }
 
   ngOnInit() {
     this.form = this.fb.group({
-      name: '',
-      color: '',
+      name: [this.data.name, Validators.required],
+      color: [this.data.color, Validators.required],
     });
   }
 

@@ -2,7 +2,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
-  MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule, MdIconModule, MdInputModule, MdListModule,
+  MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule,
+  MdListModule,
   MdSelectModule,
   MdSidenavModule,
   MdToolbarModule
@@ -57,6 +58,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MdCheckboxModule,
     MdSelectModule,
     MdInputModule,
+    MdDialogModule,
   ],
   providers: [AuthGuard],
   bootstrap: [AppComponent]
