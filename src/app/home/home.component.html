@@ -10,6 +10,15 @@
   <div class="cursor"></div>
 </div>
 
+<md-select placeholder="Context" #select="mdSelect"
+           [value]="contexts[4]"
+           (change)="onContextChange($event)">
+  <md-option *ngFor="let project of contexts"
+             [style.backgroundColor]="project.color"
+             [value]="project.$key">{{ project.name }}</md-option>
+  <md-option value="new">Create new...</md-option>
+</md-select>
+
 <div class="items">
   <div class="things">
     <!--<div>-->
@@ -20,26 +29,36 @@
       <!--</md-button-toggle-group>-->
     <!--</div>-->
 
-    <h4>Things To Do Today</h4>
+    <!--<h4>Things To Do Today</h4>-->
+    <!--<md-list>-->
+      <!--<md-list-item *ngFor="let item of tasks" [style.background]="item.color">-->
+        <!--&lt;!&ndash;<md-checkbox></md-checkbox>&ndash;&gt;-->
+        <!--&lt;!&ndash;{{item.name}}&ndash;&gt;-->
+      <!--&lt;!&ndash;</md-list-item>&ndash;&gt;-->
+    <!--</md-list>-->
+
+    <!--<h4>Recent Activities</h4>-->
     <md-list>
-      <md-list-item *ngFor="let item of tasks" [style.background]="item.color">
-        <md-checkbox></md-checkbox>
-        {{item.name}}
+      <md-list-item *ngFor="let item of recent | async" [style.background]="item.project.color">
+        <span class="name">{{item.name}}</span>
+        <button *ngIf="item.$key !== current?.activityKey" md-icon-button (click)="start(item.$key)"><md-icon>play_circle_filled</md-icon></button>
+        <span *ngIf="item.$key === current?.activityKey">{{time$ | async}}</span>
+        <button *ngIf="item.$key === current?.activityKey" md-icon-button (click)="pause(item.$key)"><md-icon>pause_circle_filled</md-icon></button>
       </md-list-item>
     </md-list>
 
-    <div>
-      <h3>Things To Do</h3>
-      <md-card *ngFor="let item of tasks" [style.background]="item.color">{{item.name}}</md-card>
-    </div>
-    <div>
-      <h3>Recent Activities</h3>
-      <md-card *ngFor="let item of recent | async" [style.background]="item.color">{{item.name}}</md-card>
-    </div>
-    <div>
-      <h3>Completed</h3>
-      <md-card *ngFor="let item of completed" [style.background]="item.color">{{item.name}}</md-card>
-    </div>
+    <!--<div>-->
+      <!--<h3>Things To Do</h3>-->
+      <!--<md-card *ngFor="let item of tasks" [style.background]="item.color">{{item.name}}</md-card>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<h3>Recent Activities</h3>-->
+      <!--<md-card *ngFor="let item of recent | async" [style.background]="item.color">{{item.name}}</md-card>-->
+    <!--</div>-->
+    <!--<div>-->
+      <!--<h3>Completed</h3>-->
+      <!--<md-card *ngFor="let item of completed" [style.background]="item.color">{{item.name}}</md-card>-->
+    <!--</div>-->
 
     <button md-fab class="example-fab" (click)="addActivity()">
       <md-icon>add</md-icon>

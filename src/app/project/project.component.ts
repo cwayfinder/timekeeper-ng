@@ -15,7 +15,7 @@ export class ProjectComponent implements OnInit {
 
   colors = Object.entries(palette)
     .filter(([name]) => name !== 'grey')
-    .map(([name, variants]) => ({name: this.formatColorName(name), value: variants[500]}));
+    .map(([name, variants]) => variants[500]);
 
   constructor(private fb: FormBuilder,
               public dialogRef: MdDialogRef<ProjectComponent>,
@@ -26,9 +26,7 @@ export class ProjectComponent implements OnInit {
       name: [this.data.name, Validators.required],
       color: [this.data.color, Validators.required],
     });
-  }
 
-  formatColorName(camelCase: string) {
-    return camelCase[0].toUpperCase() + camelCase.slice(1).replace(/([A-Z])/g, ' $1');
+    console.log(this.colors, this.data.color, this.colors.includes(this.data.color));
   }
 }

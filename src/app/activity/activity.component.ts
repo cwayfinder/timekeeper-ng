@@ -7,6 +7,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import 'rxjs/add/operator/switchMap';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/from';
+import { DbService } from '../db.service';
 
 @Component({
   selector: 'tk-activity',
@@ -22,25 +23,21 @@ export class ActivityComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private dialog: MdDialog,
-              private db: AngularFireDatabase,
-              private afAuth: AngularFireAuth,
               public dialogRef: MdDialogRef<ProjectComponent>,
-              @Inject(MD_DIALOG_DATA) private data: any) { }
+              @Inject(MD_DIALOG_DATA) private data: any,
+              private db: DbService) { }
 
   ngOnInit() {
     this.form = this.fb.group({
       name: [this.data.name, Validators.required],
-      project: [this.data.project, Validators.required],
+      projectKey: [this.data.projectKey],
     });
 
-    this.projects = this.afAuth.authState
-      .map(user => user.uid)
-      .switchMap(uid => this.db.list(`/v1/${uid}/projects`));
+    this.projects = this.db.list('projects');
   }
 
   onChange(event: MdSelectChange) {
-    console.log(event);
-    if (event.value === null) {
+    if (event.value === 'new') {
       this.openProjectDialog();
     }
   }
@@ -48,17 +45,12 @@ export class ActivityComponent implements OnInit {
   openProjectDialog(): void {
     const dialogRef = this.dialog.open(ProjectComponent, {
       width: '250px',
-      data: { name: '', color: 'red' }
+      data: { name: '', color: '#009688' }
     });
 
-    dialogRef.afterClosed().subscribe(project => {
-      console.log('The dialog was closed', project);
-
-      this.afAuth.authState
-        .map(user => user.uid)
-        .switchMap(uid => Observable.from(this.db.list(`/v1/${uid}/projects`).push(project)))
-        .map(ref => ref.key)
-        .subscribe(key => this.form.patchValue({ project: key }));
-    });
+    dialogRef.afterClosed()
+      .filter(project => !!project)
+      .switchMap(project => this.db.create('projects', project))
+      .subscribe(key => this.form.patchValue({ projectKey: key }));
   }
 }

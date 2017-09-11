@@ -1,9 +1,15 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
-import { MdDialog } from '@angular/material';
+import { MdDialog, MdSelectChange } from '@angular/material';
 import { ActivityComponent } from '../activity/activity.component';
 import { Observable } from 'rxjs/Observable';
 import { AngularFireAuth } from 'angularfire2/auth';
+import { DbService } from '../db.service';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/switchMapTo';
+import 'rxjs/add/observable/interval';
+import { palette } from '../palette';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'tk-home',
@@ -63,13 +69,37 @@ export class HomeComponent implements OnInit {
 
   recent: Observable<any[]>;
 
-  constructor(private db: AngularFireDatabase, private dialog: MdDialog,
-              private afAuth: AngularFireAuth) { }
+  current: any;
+  time$: Observable<string>;
+
+  form: FormGroup;
+
+  constructor(private db: DbService, private dialog: MdDialog) { }
 
   ngOnInit() {
-    this.recent = this.afAuth.authState
-      .map(user => user.uid)
-      .switchMap(uid => this.db.list(`/v1/${uid}/activities`));
+    this.recent = this.db.activities()
+      .map(activities => activities.map(activity => {
+        if (activity.project) {
+          return activity;
+        } else {
+          return { ...activity, project: { name: 'Inbox', color: palette.grey[500] } };
+        }
+      }));
+
+    this.recent
+      .subscribe(val => console.log(val))
+
+    const o = this.db.get('currentActivity')
+      .filter(current => !!current.$value)
+      .switchMap(current => this.db.get(`history/${current.$value}`));
+
+    o.subscribe(historyEntry => {
+      console.log('historyEntry', historyEntry)
+      this.current = historyEntry;
+    });
+
+    this.time$ = o.switchMapTo(Observable.interval())
+      .map(() => this.extractTime(this.current.start));
   }
 
   addActivity() {
@@ -79,17 +109,42 @@ export class HomeComponent implements OnInit {
   openActivityDialog(): void {
     const dialogRef = this.dialog.open(ActivityComponent, {
       width: '250px',
-      data: { name: '', color: 'red' }
+      data: { name: '', projectKey: '' }
     });
 
-    dialogRef.afterClosed().subscribe(activity => {
-      console.log('The dialog was closed', activity);
+    dialogRef.afterClosed()
+      .filter(activity => !!activity)
+      .switchMap(activity => this.db.create('activities', activity))
+      .subscribe(key => console.log('added activity', key));
+  }
 
-      this.afAuth.authState
-        .map(user => user.uid)
-        .switchMap(uid => Observable.from(this.db.list(`/v1/${uid}/activities`).push(activity)))
-        .map(ref => ref.key)
-        .subscribe(key => console.log('added activity', key));
-    });
+  start(itemKey: string) {
+    this.current = { activityKey: itemKey, start: Date.now() };
+
+    this.db.create(`history`, this.current)
+      .switchMap(historyEntryKey => this.db.set('currentActivity', historyEntryKey))
+      .subscribe(() => console.log('started activity'));
+  }
+
+  pause(itemKey: string) {
+    this.current = null;
+  }
+
+  extractTime(timestamp: number): string {
+    const delta = new Date(Date.now() - timestamp);
+
+    const parts = [delta.getUTCHours(), delta.getUTCMinutes(), delta.getUTCSeconds()];
+
+    if (!parts[0]) {
+      parts.shift();
+    }
+
+    return parts
+      .map(part => String(part).padStart(2, '0'))
+      .join(':');
+  }
+
+  onContextChange(change: MdSelectChange) {
+
   }
 }

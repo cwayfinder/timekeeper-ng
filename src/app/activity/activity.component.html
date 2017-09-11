@@ -6,11 +6,15 @@
   </md-form-field>
 
   <md-select placeholder="Project" #select="mdSelect"
-             formControlName="project"
+             formControlName="projectKey"
              (change)="onChange($event)">
-    <md-select-trigger>{{ select.selected?.viewValue }}</md-select-trigger>
-    <md-option *ngFor="let project of projects | async" [value]="project.$key">{{ project.name }}</md-option>
-    <md-option [value]="null">Create new...</md-option>
+    <!--<md-select-trigger>{{ select.selected?.viewValue }}</md-select-trigger>-->
+    <md-option [style.backgroundColor]="'#9e9e9e'" [style.color]="'#fff'"
+               value="">Inbox</md-option>
+    <md-option *ngFor="let project of projects | async"
+               [style.backgroundColor]="project.color" [style.color]="'#fff'"
+               [value]="project.$key">{{ project.name }}</md-option>
+    <md-option value="new">Create new...</md-option>
   </md-select>
 </form>
 

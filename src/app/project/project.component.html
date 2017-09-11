@@ -7,8 +7,8 @@
 
   <md-button-toggle-group #group="mdButtonToggleGroup" formControlName="color">
     <md-button-toggle *ngFor="let color of colors"
-                      [style.background]="color.value"
-                      [value]="color.value">&nbsp;</md-button-toggle>
+                      [style.backgroundColor]="color"
+                      [value]="color">&nbsp;</md-button-toggle>
   </md-button-toggle-group>
 </form>
 

@@ -25,6 +25,7 @@ import { LayoutComponent } from './layout/layout.component';
 import { AuthGuard } from './auth.guard';
 import { ProjectComponent } from './project/project.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { DbService } from './db.service';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     MdInputModule,
     MdDialogModule,
   ],
-  providers: [AuthGuard],
+  providers: [AuthGuard, DbService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
