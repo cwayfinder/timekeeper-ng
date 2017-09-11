@@ -7,9 +7,10 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { DbService } from '../db.service';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/switchMapTo';
+import 'rxjs/add/operator/combineLatest';
 import 'rxjs/add/observable/interval';
 import { palette } from '../palette';
-import { FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'tk-home',
@@ -74,7 +75,7 @@ export class HomeComponent implements OnInit {
 
   form: FormGroup;
 
-  constructor(private db: DbService, private dialog: MdDialog) { }
+  constructor(private db: DbService, private dialog: MdDialog, private fb: FormBuilder) { }
 
   ngOnInit() {
     this.recent = this.db.activities()
@@ -89,17 +90,27 @@ export class HomeComponent implements OnInit {
     this.recent
       .subscribe(val => console.log(val))
 
-    const o = this.db.get('currentActivity')
-      .filter(current => !!current.$value)
-      .switchMap(current => this.db.get(`history/${current.$value}`));
+    const o = this.db.lastActivity();
 
     o.subscribe(historyEntry => {
       console.log('historyEntry', historyEntry)
-      this.current = historyEntry;
+      if (historyEntry && historyEntry.stop) {
+        this.current = null;
+      } else {
+        this.current = historyEntry;
+      }
     });
 
-    this.time$ = o.switchMapTo(Observable.interval())
-      .map(() => this.extractTime(this.current.start));
+    this.time$ = o
+      .filter(historyEntry => !!historyEntry)
+      .filter(historyEntry => !historyEntry.stop)
+      .combineLatest(Observable.interval(), (historyEntry) => this.extractTime(historyEntry.start));
+
+    this.form = this.fb.group({
+      context: [this.contexts[3]],
+    });
+
+    this.db.lastActivity().subscribe(val => console.log('last', val));
   }
 
   addActivity() {
@@ -119,15 +130,22 @@ export class HomeComponent implements OnInit {
   }
 
   start(itemKey: string) {
-    this.current = { activityKey: itemKey, start: Date.now() };
+    const timestamp = Date.now();
 
-    this.db.create(`history`, this.current)
-      .switchMap(historyEntryKey => this.db.set('currentActivity', historyEntryKey))
-      .subscribe(() => console.log('started activity'));
+    if (this.current) {
+      this.db.update(`history/${this.current.$key}`, { stop: timestamp })
+        .switchMapTo(this.db.create(`history`, { activityKey: itemKey, start: timestamp }))
+        .subscribe(() => console.log('started activity'));
+    } else {
+      this.db.create(`history`, { activityKey: itemKey, start: timestamp })
+        .subscribe(() => console.log('started activity'));
+    }
   }
 
   pause(itemKey: string) {
-    this.current = null;
+    const timestamp = Date.now();
+    this.db.update(`history/${this.current.$key}`, { stop: timestamp })
+      .subscribe(() => console.log('stopped activity'));
   }
 
   extractTime(timestamp: number): string {

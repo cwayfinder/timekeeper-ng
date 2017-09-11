@@ -10,14 +10,18 @@
   <div class="cursor"></div>
 </div>
 
-<md-select placeholder="Context" #select="mdSelect"
-           [value]="contexts[4]"
-           (change)="onContextChange($event)">
-  <md-option *ngFor="let project of contexts"
-             [style.backgroundColor]="project.color"
-             [value]="project.$key">{{ project.name }}</md-option>
-  <md-option value="new">Create new...</md-option>
-</md-select>
+
+<form [formGroup]="form">
+  <md-select placeholder="Context" [style.backgroundColor]="form.value?.context?.color"
+             formControlName="context"
+             (change)="onContextChange($event)">
+    <md-option *ngFor="let project of contexts"
+               [style.backgroundColor]="project.color"
+               [value]="project">{{ project.name }}</md-option>
+    <md-option value="new">Create new...</md-option>
+  </md-select>
+</form>
+
 
 <div class="items">
   <div class="things">
