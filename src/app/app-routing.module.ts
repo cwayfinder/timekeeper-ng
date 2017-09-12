@@ -9,6 +9,7 @@ import { LoginComponent } from './login/login.component';
 import { AuthGuard } from './auth.guard';
 import { LayoutComponent } from './layout/layout.component';
 import { ProjectComponent } from './project/project.component';
+import { ActivityHistoryComponent } from './activity-history/activity-history.component';
 
 const routes: Routes = [
   {
@@ -19,6 +20,7 @@ const routes: Routes = [
       { path: 'context', component: ContextComponent },
       { path: 'activity', component: ActivityComponent },
       { path: 'project', component: ProjectComponent },
+      { path: 'activity-history', component: ActivityHistoryComponent },
     ]
   },
 

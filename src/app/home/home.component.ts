@@ -80,11 +80,10 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.recent = this.db.activities()
       .map(activities => activities.map(activity => {
-        if (activity.project) {
-          return activity;
-        } else {
-          return { ...activity, project: { name: 'Inbox', color: palette.grey[500] } };
+        if (!activity.project) {
+          activity.project = { name: 'Inbox', color: palette.grey[500] }
         }
+        return activity;
       }));
 
     this.recent
@@ -129,15 +128,16 @@ export class HomeComponent implements OnInit {
       .subscribe(key => console.log('added activity', key));
   }
 
-  start(itemKey: string) {
+  start(item: any) {
+    console.log('start', item)
     const timestamp = Date.now();
 
     if (this.current) {
       this.db.update(`history/${this.current.$key}`, { stop: timestamp })
-        .switchMapTo(this.db.create(`history`, { activityKey: itemKey, start: timestamp }))
+        .switchMapTo(this.db.create(`history`, { activityKey: item.$key, start: timestamp }))
         .subscribe(() => console.log('started activity'));
     } else {
-      this.db.create(`history`, { activityKey: itemKey, start: timestamp })
+      this.db.create(`history`, { activityKey: item.$key, start: timestamp })
         .subscribe(() => console.log('started activity'));
     }
   }

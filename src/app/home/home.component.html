@@ -45,7 +45,7 @@
     <md-list>
       <md-list-item *ngFor="let item of recent | async" [style.background]="item.project.color">
         <span class="name">{{item.name}}</span>
-        <button *ngIf="item.$key !== current?.activityKey" md-icon-button (click)="start(item.$key)"><md-icon>play_circle_filled</md-icon></button>
+        <button *ngIf="item.$key !== current?.activityKey" md-icon-button (click)="start(item)"><md-icon>play_circle_filled</md-icon></button>
         <span *ngIf="item.$key === current?.activityKey">{{time$ | async}}</span>
         <button *ngIf="item.$key === current?.activityKey" md-icon-button (click)="pause(item.$key)"><md-icon>pause_circle_filled</md-icon></button>
       </md-list-item>

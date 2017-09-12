@@ -26,6 +26,7 @@ import { AuthGuard } from './auth.guard';
 import { ProjectComponent } from './project/project.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DbService } from './db.service';
+import { ActivityHistoryComponent } from './activity-history/activity-history.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import { DbService } from './db.service';
     ActivityComponent,
     LoginComponent,
     LayoutComponent,
-    ProjectComponent
+    ProjectComponent,
+    ActivityHistoryComponent
   ],
   imports: [
     BrowserModule,

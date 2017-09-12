@@ -1,0 +1,4 @@
+<div class="item" *ngFor="let item of items | async" [style.backgroundColor]="item.activity.project.color">
+  <span class="name">{{item.activity.name}}</span>
+  <span class="time">{{delta(item.start, item.stop)}}</span>
+</div>

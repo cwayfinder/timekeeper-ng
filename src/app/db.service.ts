@@ -19,7 +19,8 @@ export class DbService {
   }
 
   list(path): Observable<any[]> {
-    return this.db.list(`/v1/${this.uid}/${path}`);
+    return this.db.list(`/v1/${this.uid}/${path}`)
+      .do(val => console.log('list', path, val));
   }
 
   get(path): Observable<any> {
@@ -48,7 +49,6 @@ export class DbService {
 
     return this.list('activities')
       .switchMap(activities => {
-
         const projectObservables = activities.map(activity => {
           if (activity.projectKey) {
             return this.get(`projects/${activity.projectKey}`);
@@ -72,5 +72,45 @@ export class DbService {
     return this.db
       .list(`/v1/${this.uid}/history`, { query: { limitToLast: 1 } })
       .map(list => list[0]);
+  }
+
+  activityHistory() {
+    const activities$ = this.list('activities')
+    // .map(list => list.reduce((obj, item) => ({ ...obj, [item.$key]: item }), {}))
+    // .subscribe(val => console.log(val));
+
+    const projects$ = this.list('projects')
+      .map(list => list.reduce((obj, item) => ({ ...obj, [item.$key]: item }), {}))
+    // .subscribe(val => console.log(val));
+
+
+    const date = new Date();
+    date.setUTCHours(10, 0, 0, 0);
+
+    const history$ = this.db.list(`/v1/${this.uid}/history`, {
+      // query: {
+      //   orderByChild: 'start',
+      //   startAt: date.valueOf(),
+      // }
+    });
+
+    return Observable.combineLatest(history$, activities$, projects$, (history, activities, projects) => {
+      console.log(history, activities, projects);
+
+      activities = activities
+        .map(activity => {
+          activity.project = projects[activity.projectKey]
+          return activity;
+        })
+        .reduce((obj, item) => ({ ...obj, [item.$key]: item }), {});
+
+      console.log(activities);
+
+      return history
+        .map(historyItem => {
+          historyItem.activity = activities[historyItem.activityKey];
+          return historyItem;
+        });
+    });
   }
 }

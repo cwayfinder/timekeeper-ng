@@ -1,0 +1,11 @@
+.item {
+  display: flex;
+  color: #fff;
+
+  .name {
+    flex: 1;
+  }
+  .time {
+    width: 50px;
+  }
+}
