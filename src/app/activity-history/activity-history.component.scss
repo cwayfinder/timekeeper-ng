@@ -28,6 +28,8 @@
     color: #fff;
     position: absolute;
     width: 100%;
+    border-bottom: 1px dashed #fff;
+    box-sizing: border-box;
 
     .name {
       flex: 1;
