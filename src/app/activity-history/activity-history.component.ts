@@ -11,21 +11,55 @@ import { deltaTime } from '../date-utils';
 })
 export class ActivityHistoryComponent implements OnInit {
 
-  items: Observable<any[]>;
+  items$: Observable<any[]>;
+  hours: string[]= [];
 
   constructor(private db: DbService) { }
 
   ngOnInit() {
-    this.items = this.db.activityHistory();
+    this.items$ = this.db.activityHistory()
+      .map(items => {
+        const startTime = this.getWakeUpTime();
+        const endTime = this.getGoToBedTime();
+        const totalTime = endTime - startTime;
 
-    this.db.activityHistory().subscribe(val => console.log(val));
+        const totalPx = 1600;
+
+        items.forEach(item => {
+          if (!item.stop) {
+            item.stop = Date.now();
+          }
+
+          item.startPx = totalPx * (item.start - startTime) / totalTime;
+          const stopPx = totalPx * (item.stop - startTime) / totalTime;
+          item.heightPx = stopPx - item.startPx;
+        });
+        return items;
+      })
+      .do(val => console.log(val));
+
+    for (let i = 6; i < 22; i++) {
+      this.hours.push(`${String(i + 1).padStart(2, '0')}:00`);
+    }
   }
 
-  delta(start: number, stop: number) {
+  delta(start: number, stop: number): string {
     if (stop) {
       return deltaTime(start, stop);
     } else {
       return deltaTime(start, Date.now());
     }
+  }
+
+  getWakeUpTime(): number {
+    const date = new Date();
+    date.setUTCHours(3, 0, 0, 0);
+    return date.valueOf();
+  }
+
+  getGoToBedTime(): number {
+    const date = new Date();
+    date.setUTCHours(19, 0, 0, 0);
+    return date.valueOf();
   }
 }

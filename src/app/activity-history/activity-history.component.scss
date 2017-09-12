@@ -1,11 +1,41 @@
-.item {
+:host {
   display: flex;
-  color: #fff;
+  height: 1600px;
+}
 
-  .name {
-    flex: 1;
+.hours {
+  width: 50px;
+
+  .hour {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0 4px;
+    height: 100px;
+    box-sizing: border-box;
+    border-bottom: 1px solid rgba(0,0,0,.87);
   }
-  .time {
-    width: 50px;
+}
+
+.activities {
+  flex: 1;
+  height: 100%;
+  background: rgba(0,0,0,.87);
+  position: relative;
+
+  .item {
+    display: flex;
+    color: #fff;
+    position: absolute;
+    width: 100%;
+
+    .name {
+      flex: 1;
+    }
+    .time {
+      width: 70px;
+      text-align: right;
+      padding: 0 4px;
+    }
   }
 }

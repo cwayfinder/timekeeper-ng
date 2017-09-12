@@ -86,13 +86,13 @@ export class DbService {
 
 
     const date = new Date();
-    date.setUTCHours(10, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
 
     const history$ = this.db.list(`/v1/${this.uid}/history`, {
-      // query: {
-      //   orderByChild: 'start',
-      //   startAt: date.valueOf(),
-      // }
+      query: {
+        orderByChild: 'start',
+        startAt: date.valueOf(),
+      }
     });
 
     return Observable.combineLatest(history$, activities$, projects$, (history, activities, projects) => {
