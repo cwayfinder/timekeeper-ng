@@ -7,6 +7,7 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/observable/combineLatest';
 import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/observable/empty';
+import { palette } from './palette';
 
 @Injectable()
 export class DbService {
@@ -99,7 +100,7 @@ export class DbService {
 
       activities = activities
         .map(activity => {
-          activity.project = projects[activity.projectKey]
+          activity.project = activity.projectKey ? projects[activity.projectKey] : { name: 'Inbox', color: palette.grey[500] };
           return activity;
         })
         .reduce((obj, item) => ({ ...obj, [item.$key]: item }), {});
