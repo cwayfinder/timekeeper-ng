@@ -23,7 +23,7 @@ export class ActivityComponent implements OnInit {
 
   constructor(private fb: FormBuilder,
               private dialog: MdDialog,
-              public dialogRef: MdDialogRef<ProjectComponent>,
+              public dialogRef: MdDialogRef<ActivityComponent>,
               @Inject(MD_DIALOG_DATA) private data: any,
               private db: DbService) { }
 
@@ -49,8 +49,12 @@ export class ActivityComponent implements OnInit {
     });
 
     dialogRef.afterClosed()
-      .filter(project => !!project)
-      .switchMap(project => this.db.create('projects', project))
-      .subscribe(key => this.form.patchValue({ projectKey: key }));
+      .filter(projectKey => !!projectKey)
+      .subscribe(projectKey => this.form.patchValue({ projectKey }));
+  }
+
+  save() {
+    this.db.create('activities', this.form.value)
+      .subscribe(key => this.dialogRef.close(key));
   }
 }

@@ -117,15 +117,10 @@ export class HomeComponent implements OnInit {
   }
 
   openActivityDialog(): void {
-    const dialogRef = this.dialog.open(ActivityComponent, {
+    this.dialog.open(ActivityComponent, {
       width: '250px',
       data: { name: '', projectKey: '' }
     });
-
-    dialogRef.afterClosed()
-      .filter(activity => !!activity)
-      .switchMap(activity => this.db.create('activities', activity))
-      .subscribe(key => console.log('added activity', key));
   }
 
   start(item: any) {

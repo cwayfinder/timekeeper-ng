@@ -11,14 +11,14 @@
   <md-form-field class="example-full-width">
     <input mdInput placeholder="Activity" aria-label="Activity" [mdAutocomplete]="auto" formControlName="activity">
     <md-autocomplete #auto="mdAutocomplete">
-      <md-option *ngFor="let activity of activities$ | async"
+      <md-option *ngFor="let activity of filteredActivities$ | async"
                  [value]="activity.name"
                  [style.backgroundColor]="activity.project.color"
                  (onSelectionChange)="selectActivity($event, activity)">
         <span>{{ activity.name }}</span> |
         <small>{{activity.project.name}}</small>
       </md-option>
-      <md-option class="create-new">Create new...</md-option>
+      <md-option class="create-new" (onSelectionChange)="openAddDialog()">Create new...</md-option>
     </md-autocomplete>
   </md-form-field>
 </form>

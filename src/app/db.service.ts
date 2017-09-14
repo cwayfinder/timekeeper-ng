@@ -21,26 +21,30 @@ export class DbService {
 
   list(path): Observable<any[]> {
     return this.db.list(`/v1/${this.uid}/${path}`)
-      .do(val => console.log('list', path, val));
+      .do(list => console.log('list', path, list));
   }
 
   get(path): Observable<any> {
-    return this.db.object(`/v1/${this.uid}/${path}`);
+    return this.db.object(`/v1/${this.uid}/${path}`)
+      .do(entity => console.log('get', path, entity));
   }
 
   create(path, entity): Observable<string> {
     return Observable.from(this.db.list(`/v1/${this.uid}/${path}`).push(entity))
-      .map((ref: firebase.database.Reference) => ref.key);
+      .map((ref: firebase.database.Reference) => ref.key)
+      .do(key => console.log('create', path, entity, key));
   }
 
-  update(path, entity): Observable<void> {
-    return Observable.from(this.db.object(`/v1/${this.uid}/${path}`).update(entity));
+  update(path, patch): Observable<void> {
+    return Observable.from(this.db.object(`/v1/${this.uid}/${path}`).update(patch))
+      .do(() => console.log('update', path, patch));
   }
 
   set(path, entity): Observable<void> {
     return this.afAuth.authState
       .map(user => user.uid)
-      .switchMap(uid => Observable.from(this.db.object(`/v1/${uid}/${path}`).set(entity)));
+      .switchMap(uid => Observable.from(this.db.object(`/v1/${uid}/${path}`).set(entity)))
+      .do(() => console.log('set', path, entity));
   }
 
   activities() {

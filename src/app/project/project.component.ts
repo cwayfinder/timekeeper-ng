@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, Inject } from '@angular/cor
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { palette } from '../palette';
 import { MD_DIALOG_DATA, MdDialogRef } from '@angular/material';
+import { DbService } from '../db.service';
 
 @Component({
   selector: 'tk-project',
@@ -17,7 +18,8 @@ export class ProjectComponent implements OnInit {
     .filter(([name]) => name !== 'grey')
     .map(([name, variants]) => variants[500]);
 
-  constructor(private fb: FormBuilder,
+  constructor(private db: DbService,
+              private fb: FormBuilder,
               public dialogRef: MdDialogRef<ProjectComponent>,
               @Inject(MD_DIALOG_DATA) private data: any) { }
 
@@ -26,5 +28,10 @@ export class ProjectComponent implements OnInit {
       name: [this.data.name, Validators.required],
       color: [this.data.color, Validators.required],
     });
+  }
+
+  save() {
+    this.db.create('projects', this.form.value)
+      .subscribe(key => this.dialogRef.close(key));
   }
 }
