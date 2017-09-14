@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { DbService } from '../db.service';
 import { Observable } from 'rxjs/Observable';
 import { deltaTime } from '../date-utils';
+import { ActivityHistoryItemComponent } from '../activity-history-item/activity-history-item.component';
+import { MdDialog } from '@angular/material';
 
 @Component({
   selector: 'tk-activity-history',
@@ -14,7 +16,7 @@ export class ActivityHistoryComponent implements OnInit {
   items$: Observable<any[]>;
   hours: string[]= [];
 
-  constructor(private db: DbService) { }
+  constructor(private db: DbService, private dialog: MdDialog) { }
 
   ngOnInit() {
     this.items$ = this.db.activityHistory()
@@ -61,5 +63,17 @@ export class ActivityHistoryComponent implements OnInit {
     const date = new Date();
     date.setUTCHours(19, 0, 0, 0);
     return date.valueOf();
+  }
+
+  editItem(item: any) {
+    const dialogRef = this.dialog.open(ActivityHistoryItemComponent, {
+      width: '320px',
+      data: item
+    });
+
+    dialogRef.afterClosed()
+      // .filter(activity => !!activity)
+      // .switchMap(activity => this.db.create('activities', activity))
+      .subscribe(key => console.log('edited activity', key));
   }
 }

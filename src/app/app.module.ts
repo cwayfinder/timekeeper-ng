@@ -2,6 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
+  MdAutocompleteModule,
   MdButtonModule, MdButtonToggleModule, MdCardModule, MdCheckboxModule, MdDialogModule, MdIconModule, MdInputModule,
   MdListModule,
   MdSelectModule,
@@ -27,6 +28,7 @@ import { ProjectComponent } from './project/project.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DbService } from './db.service';
 import { ActivityHistoryComponent } from './activity-history/activity-history.component';
+import { ActivityHistoryItemComponent } from './activity-history-item/activity-history-item.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import { ActivityHistoryComponent } from './activity-history/activity-history.co
     LoginComponent,
     LayoutComponent,
     ProjectComponent,
-    ActivityHistoryComponent
+    ActivityHistoryComponent,
+    ActivityHistoryItemComponent
   ],
   imports: [
     BrowserModule,
@@ -62,8 +65,12 @@ import { ActivityHistoryComponent } from './activity-history/activity-history.co
     MdSelectModule,
     MdInputModule,
     MdDialogModule,
+    MdAutocompleteModule,
   ],
   providers: [AuthGuard, DbService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [
+    ActivityHistoryItemComponent,
+  ]
 })
 export class AppModule {}

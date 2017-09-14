@@ -1,0 +1,15 @@
+.example-full-width {
+  width: 100%;
+}
+
+.mat-option {
+  color: #fff;
+
+  &.mat-active {
+    font-weight: bold;
+  }
+
+  &.create-new {
+    color: inherit;
+  }
+}

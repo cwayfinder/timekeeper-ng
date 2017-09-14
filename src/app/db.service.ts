@@ -54,7 +54,7 @@ export class DbService {
           if (activity.projectKey) {
             return this.get(`projects/${activity.projectKey}`);
           } else {
-            return Observable.of(null);
+            return Observable.of({ name: 'Inbox', color: palette.grey[500] });
           }
         });
 
@@ -86,7 +86,7 @@ export class DbService {
 
 
     const date = new Date();
-    date.setUTCHours(0, 0, 0, 0);
+    date.setHours(0, 0, 0, 0);
 
     const history$ = this.db.list(`/v1/${this.uid}/history`, {
       query: {

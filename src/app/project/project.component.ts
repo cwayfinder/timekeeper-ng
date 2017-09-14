@@ -26,7 +26,5 @@ export class ProjectComponent implements OnInit {
       name: [this.data.name, Validators.required],
       color: [this.data.color, Validators.required],
     });
-
-    console.log(this.colors, this.data.color, this.colors.includes(this.data.color));
   }
 }

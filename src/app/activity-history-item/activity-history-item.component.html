@@ -1,0 +1,29 @@
+<h1 md-dialog-title></h1>
+
+<form md-dialog-content [formGroup]="form">
+  <md-form-field class="example-full-width">
+    <input type="time" mdInput placeholder="Start" formControlName="start">
+  </md-form-field>
+  <md-form-field class="example-full-width">
+    <input type="time" mdInput placeholder="Stop" formControlName="stop">
+  </md-form-field>
+
+  <md-form-field class="example-full-width">
+    <input mdInput placeholder="Activity" aria-label="Activity" [mdAutocomplete]="auto" formControlName="activity">
+    <md-autocomplete #auto="mdAutocomplete">
+      <md-option *ngFor="let activity of activities$ | async"
+                 [value]="activity.name"
+                 [style.backgroundColor]="activity.project.color"
+                 (onSelectionChange)="selectActivity($event, activity)">
+        <span>{{ activity.name }}</span> |
+        <small>{{activity.project.name}}</small>
+      </md-option>
+      <md-option class="create-new">Create new...</md-option>
+    </md-autocomplete>
+  </md-form-field>
+</form>
+
+<div md-dialog-actions>
+  <button md-button (click)="dialogRef.close()" tabindex="-1">No Thanks</button>
+  <button md-button (click)="save()" tabindex="2">Ok</button>
+</div>

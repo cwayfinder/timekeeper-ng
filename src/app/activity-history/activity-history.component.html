@@ -8,7 +8,8 @@
   <div class="item" *ngFor="let item of items$ | async"
        [style.top]="item.startPx + 'px'"
        [style.height]="item.heightPx + 'px'"
-       [style.backgroundColor]="item.activity.project.color">
+       [style.backgroundColor]="item.activity.project.color"
+       (click)="editItem(item)">
     <span class="name">{{item.activity.name}}</span>
     <span class="time">{{delta(item.start, item.stop)}}</span>
   </div>
