@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { DbService } from '../db.service';
 import 'rxjs/add/operator/startWith';
 import { ActivityComponent } from '../activity/activity.component';
+import * as addMinutes from 'date-fns/add_minutes';
 
 @Component({
   selector: 'tk-activity-history-item',
@@ -26,27 +27,45 @@ export class ActivityHistoryItemComponent implements OnInit {
               private fb: FormBuilder,
               private dialog: MdDialog,
               public dialogRef: MdDialogRef<ActivityHistoryItemComponent>,
-              @Inject(MD_DIALOG_DATA) private historyItem: any) { }
+              @Inject(MD_DIALOG_DATA) private params: any) { }
 
   ngOnInit() {
-    const startDate = new Date(this.historyItem.start);
-    const start = `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
-    const stopDate = new Date(this.historyItem.stop);
-    const stop = `${String(stopDate.getHours()).padStart(2, '0')}:${String(stopDate.getMinutes()).padStart(2, '0')}`;
+    const start = this.prepareStartTime();
+    const stop = this.prepareStopTime();
 
     console.log(start);
+
+    const activity = this.params.mode === 'edit' ? this.params.item.activity.name : '';
 
     this.form = this.fb.group({
       start: [start, Validators.required],
       stop: [stop, Validators.required],
-      activity: [this.historyItem.activity.name, Validators.required],
+      activity: [activity, Validators.required],
     });
 
     this.activities$ = this.db.activities();
 
     this.filteredActivities$ = this.form.get('activity').valueChanges
       .startWith('')
-      .combineLatest(this.activities$, (input, activities) => activities.filter(activity => this.matchActivity(input, activity)));
+      .combineLatest(this.activities$, (input, activities) => activities.filter(act => this.matchActivity(input, act)));
+  }
+
+  private prepareStartTime(): string {
+    const startDate = new Date(this.params.item.start);
+    return `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
+  }
+
+  private prepareStopTime() {
+    let stopDate;
+    if (this.params.mode === 'edit') {
+      stopDate = new Date(this.params.item.stop);
+    } else {
+      stopDate = addMinutes(this.params.item.start, 30);
+    }
+
+    console.log(stopDate)
+
+    return `${String(stopDate.getHours()).padStart(2, '0')}:${String(stopDate.getMinutes()).padStart(2, '0')}`;
   }
 
   matchActivity(input, activity) {
@@ -66,19 +85,24 @@ export class ActivityHistoryItemComponent implements OnInit {
   }
 
   save() {
-    const update: any = {};
+    const data: any = {};
 
     if (this.selectedActivity) {
-      update.activityKey = this.selectedActivity.$key;
+      data.activityKey = this.selectedActivity.$key;
     }
 
     const startTime = this.form.value.start.split(':').map(Number);
-    update.start = new Date(this.historyItem.start).setHours(startTime[0], startTime[1]);
+    data.start = new Date(this.params.item.start).setHours(startTime[0], startTime[1]);
     const stopTime = this.form.value.stop.split(':').map(Number);
-    update.stop = new Date(this.historyItem.stop).setHours(stopTime[0], stopTime[1]);
+    data.stop = new Date(this.params.item.stop).setHours(stopTime[0], stopTime[1]);
 
-    this.db.update(`history/${this.historyItem.$key}`, update)
-      .subscribe(() => this.dialogRef.close());
+    if (this.params.mode === 'edit') {
+      this.db.update(`history/${this.params.item.$key}`, data)
+        .subscribe(() => this.dialogRef.close());
+    } else {
+      this.db.create(`history/${this.params.item.$key}`, data)
+        .subscribe(() => this.dialogRef.close());
+    }
   }
 
 
@@ -90,7 +114,7 @@ export class ActivityHistoryItemComponent implements OnInit {
 
     dialogRef.afterClosed()
       .filter(activityKey => !!activityKey)
-      .do(activityKey => this.db.set(`history/${this.historyItem.$key}/activityKey`, activityKey))
+      .do(activityKey => this.db.set(`history/${this.params.item.$key}/activityKey`, activityKey))
       .switchMap(activityKey => this.db.get(`activities/${activityKey}`))
       .subscribe(activity => {
         this.selectedActivity = activity;

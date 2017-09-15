@@ -14,7 +14,7 @@ import { MdDialog } from '@angular/material';
 export class ActivityHistoryComponent implements OnInit {
 
   items$: Observable<any[]>;
-  hours: string[]= [];
+  hours: string[] = [];
 
   constructor(private db: DbService, private dialog: MdDialog) { }
 
@@ -55,25 +55,45 @@ export class ActivityHistoryComponent implements OnInit {
 
   getWakeUpTime(): number {
     const date = new Date();
-    date.setUTCHours(3, 0, 0, 0);
+    date.setHours(6, 0, 0, 0);
     return date.valueOf();
   }
 
   getGoToBedTime(): number {
     const date = new Date();
-    date.setUTCHours(19, 0, 0, 0);
+    date.setHours(22, 0, 0, 0);
     return date.valueOf();
   }
 
   editItem(item: any) {
     const dialogRef = this.dialog.open(ActivityHistoryItemComponent, {
       width: '320px',
-      data: item
+      data: {
+        mode: 'edit',
+        item
+      }
     });
+  }
 
-    dialogRef.afterClosed()
-      // .filter(activity => !!activity)
-      // .switchMap(activity => this.db.create('activities', activity))
-      .subscribe(key => console.log('edited activity', key));
+  addItem(event: MouseEvent) {
+    const start = this.getTimestampByClick(event);
+
+    const dialogRef = this.dialog.open(ActivityHistoryItemComponent, {
+      width: '320px',
+      data: { mode: 'create', item: {start} }
+    });
+  }
+
+  private getTimestampByClick(event: MouseEvent): number {
+    const yPx = event.layerY;
+    const addHours = yPx / 100;
+    const addMinutesPx = yPx % 100;
+    const addMinutes = addMinutesPx * 60 / 100;
+
+    const wakeUp = new Date(this.getWakeUpTime());
+    const hours = wakeUp.getHours() + addHours;
+    const minutes = wakeUp.getMinutes() + addMinutes;
+
+    return wakeUp.setHours(hours, minutes);
   }
 }
