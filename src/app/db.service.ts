@@ -75,7 +75,12 @@ export class DbService {
 
   lastActivity() {
     return this.db
-      .list(`/v1/${this.uid}/history`, { query: { limitToLast: 1 } })
+      .list(`/v1/${this.uid}/history`, {
+        query: {
+          orderByChild: 'start',
+          limitToLast: 1
+        }
+      })
       .map(list => list[0]);
   }
 
@@ -104,7 +109,10 @@ export class DbService {
 
       activities = activities
         .map(activity => {
-          activity.project = activity.projectKey ? projects[activity.projectKey] : { name: 'Inbox', color: palette.grey[500] };
+          activity.project = activity.projectKey ? projects[activity.projectKey] : {
+            name: 'Inbox',
+            color: palette.grey[500]
+          };
           return activity;
         })
         .reduce((obj, item) => ({ ...obj, [item.$key]: item }), {});
