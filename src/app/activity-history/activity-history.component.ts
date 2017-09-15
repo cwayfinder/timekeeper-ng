@@ -96,22 +96,15 @@ export class ActivityHistoryComponent implements OnInit {
   }
 
   private getTimingsByClick(event: MouseEvent): { start: number, stop: number } {
-    const yPx = event.layerY;
-    const hoursToAdd = yPx / 100;
-    const minutesToAddPx = yPx % 100;
-    const minutesToAdd = minutesToAddPx * 60 / 100;
-
-    const wakeUp = new Date(this.getWakeUpTime());
-    const hours = wakeUp.getHours() + hoursToAdd;
-    const minutes = wakeUp.getMinutes() + minutesToAdd;
-
-    const timestamp = wakeUp.setHours(hours, minutes);
+    const minutesToAdd = event.layerY * 60 / 100;
+    const timestamp = addMinutes(this.getWakeUpTime(), minutesToAdd);
 
     const result: any = {};
 
     const stops = this.items.map(item => item.stop);
     const lastStop = closestTo(timestamp, stops);
-    if (differenceInMinutes(lastStop, timestamp) <= 30) {
+
+    if (differenceInMinutes(timestamp, lastStop) <= 30) {
       result.start = lastStop.valueOf();
     } else {
       result.start = timestamp;
@@ -119,10 +112,11 @@ export class ActivityHistoryComponent implements OnInit {
 
     const starts = this.items.map(item => item.start);
     const nextStart = closestTo(timestamp, starts);
-    if (differenceInMinutes(timestamp, nextStart) <= 30) {
+    const diffStart = differenceInMinutes(nextStart, timestamp);
+    if (diffStart > 0 && diffStart <= 30) {
       result.stop = nextStart.valueOf();
     } else {
-      result.stop = addMinutes(timestamp, 30).valueOf();
+      result.stop = addMinutes(result.start, 30).valueOf();
     }
 
     return result;

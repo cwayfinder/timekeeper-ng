@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { DbService } from '../db.service';
 import 'rxjs/add/operator/startWith';
 import { ActivityComponent } from '../activity/activity.component';
+import * as format from 'date-fns/format';
 
 @Component({
   selector: 'tk-activity-history-item',
@@ -29,16 +30,11 @@ export class ActivityHistoryItemComponent implements OnInit {
               @Inject(MD_DIALOG_DATA) private params: any) { }
 
   ngOnInit() {
-    const start = this.prepareStartTime();
-    const stop = this.prepareStopTime();
-
-    console.log(start);
-
     const activity = this.params.mode === 'edit' ? this.params.item.activity.name : '';
 
     this.form = this.fb.group({
-      start: [start, Validators.required],
-      stop: [stop, Validators.required],
+      start: [format(this.params.item.start, 'HH:mm'), Validators.required],
+      stop: [format(this.params.item.stop, 'HH:mm'), Validators.required],
       activity: [activity, Validators.required],
     });
 
@@ -47,16 +43,6 @@ export class ActivityHistoryItemComponent implements OnInit {
     this.filteredActivities$ = this.form.get('activity').valueChanges
       .startWith('')
       .combineLatest(this.activities$, (input, activities) => activities.filter(act => this.matchActivity(input, act)));
-  }
-
-  private prepareStartTime(): string {
-    const startDate = new Date(this.params.item.start);
-    return `${String(startDate.getHours()).padStart(2, '0')}:${String(startDate.getMinutes()).padStart(2, '0')}`;
-  }
-
-  private prepareStopTime() {
-    const stopDate = new Date(this.params.item.stop);
-    return `${String(stopDate.getHours()).padStart(2, '0')}:${String(stopDate.getMinutes()).padStart(2, '0')}`;
   }
 
   matchActivity(input, activity) {
