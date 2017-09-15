@@ -5,7 +5,6 @@ import { Observable } from 'rxjs/Observable';
 import { DbService } from '../db.service';
 import 'rxjs/add/operator/startWith';
 import { ActivityComponent } from '../activity/activity.component';
-import * as addMinutes from 'date-fns/add_minutes';
 
 @Component({
   selector: 'tk-activity-history-item',
@@ -56,15 +55,7 @@ export class ActivityHistoryItemComponent implements OnInit {
   }
 
   private prepareStopTime() {
-    let stopDate;
-    if (this.params.mode === 'edit') {
-      stopDate = new Date(this.params.item.stop);
-    } else {
-      stopDate = addMinutes(this.params.item.start, 30);
-    }
-
-    console.log(stopDate)
-
+    const stopDate = new Date(this.params.item.stop);
     return `${String(stopDate.getHours()).padStart(2, '0')}:${String(stopDate.getMinutes()).padStart(2, '0')}`;
   }
 
@@ -100,11 +91,10 @@ export class ActivityHistoryItemComponent implements OnInit {
       this.db.update(`history/${this.params.item.$key}`, data)
         .subscribe(() => this.dialogRef.close());
     } else {
-      this.db.create(`history/${this.params.item.$key}`, data)
+      this.db.create(`history`, data)
         .subscribe(() => this.dialogRef.close());
     }
   }
-
 
   openAddDialog() {
     const dialogRef = this.dialog.open(ActivityComponent, {

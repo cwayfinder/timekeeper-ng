@@ -4,6 +4,10 @@ import { Observable } from 'rxjs/Observable';
 import { deltaTime } from '../date-utils';
 import { ActivityHistoryItemComponent } from '../activity-history-item/activity-history-item.component';
 import { MdDialog } from '@angular/material';
+import * as closestTo from 'date-fns/closest_to';
+import * as differenceInMinutes from 'date-fns/difference_in_minutes';
+import * as addMinutes from 'date-fns/add_minutes';
+import * as format from 'date-fns/format';
 
 @Component({
   selector: 'tk-activity-history',
@@ -14,6 +18,7 @@ import { MdDialog } from '@angular/material';
 export class ActivityHistoryComponent implements OnInit {
 
   items$: Observable<any[]>;
+  items: any[] = [];
   hours: string[] = [];
 
   constructor(private db: DbService, private dialog: MdDialog) { }
@@ -37,8 +42,12 @@ export class ActivityHistoryComponent implements OnInit {
           item.heightPx = stopPx - item.startPx;
         });
         return items;
-      })
-      .do(val => console.log(val));
+      });
+
+    this.items$.subscribe(items => {
+      console.log(items)
+      this.items = items;
+    });
 
     for (let i = 6; i < 22; i++) {
       this.hours.push(`${String(i + 1).padStart(2, '0')}:00`);
@@ -76,24 +85,46 @@ export class ActivityHistoryComponent implements OnInit {
   }
 
   addItem(event: MouseEvent) {
-    const start = this.getTimestampByClick(event);
+    const timings = this.getTimingsByClick(event);
+
+    console.log(format(timings.start, 'HH:mm'), format(timings.stop, 'HH:mm'));
 
     const dialogRef = this.dialog.open(ActivityHistoryItemComponent, {
       width: '320px',
-      data: { mode: 'create', item: {start} }
+      data: { mode: 'create', item: timings }
     });
   }
 
-  private getTimestampByClick(event: MouseEvent): number {
+  private getTimingsByClick(event: MouseEvent): { start: number, stop: number } {
     const yPx = event.layerY;
-    const addHours = yPx / 100;
-    const addMinutesPx = yPx % 100;
-    const addMinutes = addMinutesPx * 60 / 100;
+    const hoursToAdd = yPx / 100;
+    const minutesToAddPx = yPx % 100;
+    const minutesToAdd = minutesToAddPx * 60 / 100;
 
     const wakeUp = new Date(this.getWakeUpTime());
-    const hours = wakeUp.getHours() + addHours;
-    const minutes = wakeUp.getMinutes() + addMinutes;
+    const hours = wakeUp.getHours() + hoursToAdd;
+    const minutes = wakeUp.getMinutes() + minutesToAdd;
 
-    return wakeUp.setHours(hours, minutes);
+    const timestamp = wakeUp.setHours(hours, minutes);
+
+    const result: any = {};
+
+    const stops = this.items.map(item => item.stop);
+    const lastStop = closestTo(timestamp, stops);
+    if (differenceInMinutes(lastStop, timestamp) <= 30) {
+      result.start = lastStop.valueOf();
+    } else {
+      result.start = timestamp;
+    }
+
+    const starts = this.items.map(item => item.start);
+    const nextStart = closestTo(timestamp, starts);
+    if (differenceInMinutes(timestamp, nextStart) <= 30) {
+      result.stop = nextStart.valueOf();
+    } else {
+      result.stop = addMinutes(timestamp, 30).valueOf();
+    }
+
+    return result;
   }
 }
