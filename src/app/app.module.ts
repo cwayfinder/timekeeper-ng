@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   MdAutocompleteModule,
@@ -29,6 +29,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DbService } from './db.service';
 import { ActivityHistoryComponent } from './activity-history/activity-history.component';
 import { ActivityHistoryItemComponent } from './activity-history-item/activity-history-item.component';
+import { RavenErrorHandler } from './raven.error-handler';
 
 @NgModule({
   declarations: [
@@ -67,7 +68,11 @@ import { ActivityHistoryItemComponent } from './activity-history-item/activity-h
     MdDialogModule,
     MdAutocompleteModule,
   ],
-  providers: [AuthGuard, DbService],
+  providers: [
+    AuthGuard,
+    DbService,
+    // { provide: ErrorHandler, useClass: RavenErrorHandler }
+  ],
   bootstrap: [AppComponent],
   entryComponents: [
     ActivityHistoryItemComponent,
